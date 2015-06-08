@@ -1,0 +1,30 @@
+
+    <class name = "book" >
+        Represents a Book 
+        
+        <include filename = "../license.xml" />
+        
+        <!-- Note: If no <constructor> is declared, an implicit one is created. -->
+        <constructor>
+            Create a new Book with the given title and author.
+            <argument name = "title" type = "string" />
+            <argument name = "author" type = "string" />
+            <argument name = "session" type = "zpgutil_session_t" />
+        </constructor>
+        
+        <!-- Note: If no <destructor> is declared, an implicit one is created.
+            </destructor> -->
+        <method name = "title">
+            <return type = "string" />
+        </method>
+        
+        <method name = "author">
+            <return type = "string" />
+        </method>
+        
+        <!-- Note: See zproject_class_api.gsl for all the type strings that
+            are supported for arguments and return values in C headers.
+            Not all of these are supported in all language bindings;
+            see each language binding's file for supported types in that
+            language, and add more types as needed where appropriate. -->
+    </class>
