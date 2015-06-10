@@ -3,7 +3,13 @@
 //  @interface
 //  Create a new Book with the given title and author.
 OBOOKS_EXPORT book_t *
-    book_new (const char *title, const char *author, zpgutil_session_t *session);
+    book_new (const char *id, zpgutil_session_t *session);
+
+OBOOKS_EXPORT char*
+    get_title (book_t *self);
+
+OBOOKS_EXPORT char*
+    get_author (book_t *self);
 
 //  Destroy the book.
 OBOOKS_EXPORT void

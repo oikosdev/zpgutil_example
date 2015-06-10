@@ -71,6 +71,7 @@
     <main name = "progname" service = "1">Installed as system service</main>
     -->
 
+    <main name = "obook_selftest" private = "1">Librairie self test</main>
     <!-- 
         Models that we build using GSL. 
         This will generate a 'make code' target to build the models.

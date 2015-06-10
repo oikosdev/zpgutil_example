@@ -24,7 +24,7 @@ extern "C" {
 //  @interface
 //  Create a new Book with the given title and author.
 OBOOKS_EXPORT shelf_t *
-    shelf_new (const char *name, zpgutil_session_t *session);
+    shelf_new (zpgutil_session_t *session);
 
 //  Destroy the shelf.
 OBOOKS_EXPORT void
@@ -33,6 +33,13 @@ OBOOKS_EXPORT void
 //  
 OBOOKS_EXPORT int
     shelf_count_books (shelf_t *self);
+
+OBOOKS_EXPORT void
+    shelf_get_books (shelf_t *self, zlist_t *target);
+
+OBOOKS_EXPORT book_t* 
+    shelf_add (shelf_t *self, const char* title, const char* author);
+
 //  @end
 
 #ifdef __cplusplus

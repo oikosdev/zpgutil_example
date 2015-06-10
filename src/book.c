@@ -36,13 +36,29 @@ struct _book_t {
 //  --------------------------------------------------------------------------
 //  Create a new book
 book_t *
-book_new (const char *title, const char *author, zpgutil_session_t *session)
+book_new (const char *id, zpgutil_session_t *session)
 {
     book_t *self = (book_t *) zmalloc (sizeof (book_t));
     assert (self);
-
+    
     //  TODO: Initialize properties
-
+    char* query = (char*)zmalloc(100);
+    sprintf(query, "SELECT author, title FROM book WHERE id='%s';",id);
+    zpgutil_session_sql (session, query);
+    PGresult* res = zpgutil_session_select (session);
+    if(PQntuples(res)==0) 
+    {
+    zsys_debug ("No tuple returned !");
+    return NULL;
+    }
+    else 
+    {
+    char* title = (char *)zmalloc(200);
+    char* author = (char*)zmalloc(100);
+    strcpy(author,PQgetvalue(res,0,0));
+    strcpy(title,PQgetvalue(res,0,1));
+    }
+    PQclear(res);
     return self;
 }
 
@@ -57,7 +73,9 @@ book_destroy (book_t **self_p)
         book_t *self = *self_p;
 
         //  Free class properties
-
+        free (self->title);
+        free (self->author);
+ 
         //  Free object itself
         free (self);
         *self_p = NULL;

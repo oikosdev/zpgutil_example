@@ -29,23 +29,49 @@
 //  Structure of our class
 
 struct _shelf_t {
-  char *name;
+  zpgutil_session_t *session;
 };
 
 //  --------------------------------------------------------------------------
 //  Create a new shelf
 
 shelf_t *
-shelf_new(const char *name, zpgutil_session_t *session)
+shelf_new(zpgutil_session_t *session)
 {
-    shelf_t *self = (shelf_t *) zmalloc (sizeof (shelf_t));
-    assert (self);
+ shelf_t *self = (shelf_t *) zmalloc (sizeof (shelf_t));
+ assert (self);
 
-    //  TODO: Initialize properties
+  //  TODO: Initialize properties
+ self->session = session;
 
-    return self;
+
+ return self;
 }
 
+int
+count_books (shelf_t *self)
+{
+return 0;
+}
+
+void
+get_books (shelf_t *self, zlist_t *target)
+{
+}
+
+book_t*
+add_book (shelf_t *self, const char *author, const char *title)
+{
+  char *sql = (char*)zmalloc(500);
+  zuuid_t *uuid = zuuid_new ();
+  const char *str_uuid = zuuid_str (uuid);
+  sprintf(sql,"INSERT INTO book(id,author,title) VALUES('%s','%s','%s');",str_uuid,author,title);
+  zpgutil_session_sql (self->session, sql);
+  zpgutil_session_execute (self->session);
+  zpgutil_session_commit (self->session);     
+  book_t *book = book_new (str_uuid,self->session);
+  return book;
+}
 
 //  --------------------------------------------------------------------------
 //  Destroy the shelf
@@ -83,11 +109,19 @@ int
 shelf_test (bool verbose)
 {
     printf (" * shelf: ");
-
+    zconfig_t* config = zconfig_load(".testdir/test.cfg");
+    assert(config); 
+    zpgutil_datasource_t *datasource = zpgutil_datasource_new (config);
+    assert (datasource);
+    zpgutil_session_t *session = zpgutil_session_new (datasource);
+    assert (session);
+ 
     //  @selftest
     //  Simple create/destroy test
-    shelf_t *self = shelf_new ("my shelf",NULL);
+    shelf_t *self = shelf_new (session);
     assert (self);
+    book_t *mybook = shelf_add (self,"Albert Camus","L'étranger");
+    assert (mybook);
     shelf_destroy (&self);
     //  @end
 
