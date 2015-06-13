@@ -10,6 +10,5 @@ before_script:
 - psql -c 'create database travis_ci_test;' -U postgres
 - psql -f .testdir/create.sql -U postgres travis_ci_test
 
-
 # Build and check this project according to the BUILD_TYPE
 script: ./ci_build.sh
