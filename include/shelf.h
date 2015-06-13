@@ -35,10 +35,16 @@ OBOOKS_EXPORT int
     shelf_count_books (shelf_t *self);
 
 OBOOKS_EXPORT void
-    shelf_get_books (shelf_t *self, zlist_t *target);
+    shelf_load_books (shelf_t *self);
+
+OBOOKS_EXPORT book_t*
+    shelf_next_book (shelf_t *self);
 
 OBOOKS_EXPORT book_t* 
-    shelf_add (shelf_t *self, const char* title, const char* author);
+    shelf_add_book (shelf_t *self, const char* title, const char* author);
+
+OBOOKS_EXPORT int
+    shelf_test (bool verbose);
 
 //  @end
 

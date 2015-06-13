@@ -30,6 +30,8 @@
 
 struct _shelf_t {
   zpgutil_session_t *session;
+  PGresult *all_books_res;
+  int row;
 };
 
 //  --------------------------------------------------------------------------
@@ -40,27 +42,60 @@ shelf_new(zpgutil_session_t *session)
 {
  shelf_t *self = (shelf_t *) zmalloc (sizeof (shelf_t));
  assert (self);
-
+ //----
   //  TODO: Initialize properties
  self->session = session;
-
-
+ self->row = 0;
  return self;
 }
 
 int
-count_books (shelf_t *self)
+shelf_count_books (shelf_t *self)
 {
-return 0;
+  char *sql = "SELECT COUNT(*) FROM book";
+  zpgutil_session_sql (self->session, sql);
+  char* res = zpgutil_session_select_one (self->session);
+  assert (res);
+  int a = atoi(res);
+  return a;
 }
 
 void
-get_books (shelf_t *self, zlist_t *target)
+shelf_load_books (shelf_t *self)
 {
+  char *sql = "SELECT id, author, title FROM book";
+  zpgutil_session_sql (self->session, sql);
+  self->all_books_res = zpgutil_session_select (self->session);
+  assert (self->all_books_res);
+  self->row = 0;
+  return; 
 }
 
+book_t *
+shelf_next_book (shelf_t *self)
+{
+ int size = PQntuples(self->all_books_res);
+ if((self->all_books_res!=NULL) && (PQresultStatus(self->all_books_res)==PGRES_TUPLES_OK) && (self->row<size))
+ {
+  zsys_info ("get %i out of %i \n", self->row+1, size);
+  char *id = PQgetvalue (self->all_books_res, self->row, 0);
+  assert (id);
+  char *author = PQgetvalue (self->all_books_res, self->row, 1);
+  assert (author);
+  char *title = PQgetvalue (self->all_books_res, self->row, 2);
+  assert (title);
+  book_t *book = book_new (id, author, title);
+  assert (book);
+  zsys_info ("get object ok ! \n");
+  self->row = self->row + 1;
+  return book;
+ }
+ zsys_error ("could not get next object !\n");
+ return NULL;
+} 
+
 book_t*
-add_book (shelf_t *self, const char *author, const char *title)
+shelf_add_book (shelf_t *self, const char *author, const char *title)
 {
   char *sql = (char*)zmalloc(500);
   zuuid_t *uuid = zuuid_new ();
@@ -69,7 +104,7 @@ add_book (shelf_t *self, const char *author, const char *title)
   zpgutil_session_sql (self->session, sql);
   zpgutil_session_execute (self->session);
   zpgutil_session_commit (self->session);     
-  book_t *book = book_new (str_uuid,self->session);
+  book_t *book = book_new (str_uuid,author,title);
   return book;
 }
 
@@ -120,8 +155,18 @@ shelf_test (bool verbose)
     //  Simple create/destroy test
     shelf_t *self = shelf_new (session);
     assert (self);
-    book_t *mybook = shelf_add (self,"Albert Camus","L'étranger");
+    book_t *mybook = shelf_add_book (self,"William Shakespeare","Macbeth");
     assert (mybook);
+    
+    int c = shelf_count_books (self);
+    assert (c>0);
+
+    shelf_load_books (self);
+    book_t *loaded;
+    while ( (loaded = shelf_next_book (self)) != NULL)
+    {
+      book_print (loaded);
+    }
     shelf_destroy (&self);
     //  @end
 
