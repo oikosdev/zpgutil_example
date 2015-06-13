@@ -82,29 +82,6 @@ book_print (book_t *self)
     printf ("%s (%s)\n", self->title, self->author);
 }
 
-
-char*
-book_get_title (book_t *self)
-{
-  char *title = (char *)zmalloc(200);
-  if(self->title) 
-  {
-  strcpy(title,self->title);
-  }
-  return title;
-}
-
-char*
-book_get_author (book_t *self)
-{
-  char *author = (char *)zmalloc(200);
-  if(self->author) 
-  {
-  strcpy(author,self->author);
-  }
-  return author;
-}
-
 //  --------------------------------------------------------------------------
 //  Selftest
 
@@ -116,7 +93,7 @@ book_test (bool verbose)
     //  Simple create/destroy test
     book_t *self = book_new ("1", "Victor Hugo", "Toilers of the Sea");
     assert (self);
-    char *author = book_get_author(self);
+    char *author = self->author;
     printf("--%s",author);
     assert (author);
     assert (strcmp(author,"Victor Hugo")==0);

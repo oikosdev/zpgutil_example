@@ -26,12 +26,6 @@ extern "C" {
 OBOOKS_EXPORT book_t *
     book_new (const char *id, const char *author, const char *title);
 
-OBOOKS_EXPORT char*
-    book_get_title (book_t *self);
-
-OBOOKS_EXPORT char*
-    book_get_author (book_t *self);
-
 //  Destroy the book.
 OBOOKS_EXPORT void
     book_destroy (book_t **self_p);
