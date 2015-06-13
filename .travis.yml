@@ -1,9 +1,15 @@
 # Travis CI script
+
 language: c
 
 env:
-- BUILD_TYPE=default
-- BUILD_TYPE=qt-android
+- BUILD_TYPE=default ZMQ_REPO=libzmq    WITH_LIBSODIUM=1
+
+before_script:
+- sudo apt-get install uuid-dev
+- psql -c 'create database travis_ci_test;' -U postgres
+- psql -f .testdir/create.sql -U postgres travis_ci_test
+
 
 # Build and check this project according to the BUILD_TYPE
 script: ./ci_build.sh

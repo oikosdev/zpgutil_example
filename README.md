@@ -1,5 +1,5 @@
 # zpgutil_example
-Example project using zpgutil
+This is an example project using zpgutil. It shows how to use the library to handle "skl-speaking" objects in C.
 
 Status
 ------
