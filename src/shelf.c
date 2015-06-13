@@ -57,6 +57,7 @@ shelf_count_books (shelf_t *self)
   char* res = zpgutil_session_select_one (self->session);
   assert (res);
   int a = atoi(res);
+  free (res);
   return a;
 }
 
@@ -105,6 +106,8 @@ shelf_add_book (shelf_t *self, const char *author, const char *title)
   zpgutil_session_execute (self->session);
   zpgutil_session_commit (self->session);     
   book_t *book = book_new (str_uuid,author,title);
+  free (sql);
+  zuuid_destroy (&uuid); 
   return book;
 }
 
@@ -119,7 +122,10 @@ shelf_destroy (shelf_t **self_p)
         shelf_t *self = *self_p;
 
         //  Free class properties
-
+        if(self->all_books_res) 
+        {
+        PQclear (self->all_books_res);
+        }
         //  Free object itself
         free (self);
         *self_p = NULL;
@@ -157,7 +163,8 @@ shelf_test (bool verbose)
     assert (self);
     book_t *mybook = shelf_add_book (self,"William Shakespeare","Macbeth");
     assert (mybook);
-    
+    book_destroy (&mybook);
+
     int c = shelf_count_books (self);
     assert (c>0);
 
@@ -166,9 +173,14 @@ shelf_test (bool verbose)
     while ( (loaded = shelf_next_book (self)) != NULL)
     {
       book_print (loaded);
+      book_destroy (&loaded);
     }
     shelf_destroy (&self);
     //  @end
+
+    zpgutil_session_destroy (&session);
+    zpgutil_datasource_destroy (&datasource);
+    zconfig_destroy (&config);
 
     printf ("OK\n");
     return 0;
