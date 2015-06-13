@@ -1,5 +1,5 @@
 # zpgutil_example
-This is an example project using zpgutil. It shows how to use the library to handle "skl-speaking" objects in C.
+This is an example project using zpgutil. It shows how to use the library to implement "SQL-speaking" objects in C.
 
 Status
 ------
