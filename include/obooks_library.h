@@ -22,7 +22,7 @@
 //  External dependencies
 #include <zmq.h>
 #include <czmq.h>
-#include <pq.h>
+#include <libpq-fe.h>
 #include <zpgutil.h>
 
 //  OBOOKS version macros for compile-time API detection
