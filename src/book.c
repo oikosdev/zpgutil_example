@@ -50,42 +50,6 @@ book_new (const char* id, const char *author, const char *title)
   return self;
 } 
 
-book_t *
-book_new_session (const char *id, zpgutil_session_t *session)
-{
-    //  TODO: Initialize properties
-    char* query = (char*)zmalloc(100);
-    sprintf(query, "SELECT author, title FROM book WHERE id='%s';",id);
-    zpgutil_session_sql (session, query);
-    PGresult* res = zpgutil_session_select (session);
-    book_t *self = book_new_pg (res);
-    PQclear(res);
-    return self;
-}
-
-book_t *
-book_new_pg (PGresult *res)
-{
-    book_t *self = (book_t *) zmalloc (sizeof (book_t));
-    assert (self);
-    if(PQntuples(res)==0) 
-    {
-    zsys_debug ("No tuple returned !");
-    return NULL;
-    }
-    else 
-    {
-    self->id = (char *)zmalloc(40);
-    self->title = (char *)zmalloc(200);
-    self->author = (char*)zmalloc(100);
-    strcpy(self->author,PQgetvalue(res,0,0));
-    strcpy(self->title,PQgetvalue(res,0,1));
-    }
-    return self;
-} 
-
-
-
 //  --------------------------------------------------------------------------
 //  Destroy the book
 
@@ -148,16 +112,9 @@ int
 book_test (bool verbose)
 {
     printf (" * book: ");
-    zconfig_t* config = zconfig_load(".testdir/test.cfg");
-    assert(config); 
-    zpgutil_datasource_t *datasource = zpgutil_datasource_new (config);
-    assert (datasource);
-    zpgutil_session_t *session = zpgutil_session_new (datasource);
-    assert (session);
- 
     //  @selftest
     //  Simple create/destroy test
-    book_t *self = book_new_session ("1", session);
+    book_t *self = book_new ("1", "Victor Hugo", "Toilers of the Sea");
     assert (self);
     char *author = book_get_author(self);
     printf("--%s",author);

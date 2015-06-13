@@ -26,12 +26,6 @@ extern "C" {
 OBOOKS_EXPORT book_t *
     book_new (const char *id, const char *author, const char *title);
 
-OBOOKS_EXPORT book_t *
-    book_new_session (const char *id, zpgutil_session_t *session);
-
-OBOOKS_EXPORT book_t *
-    book_new_pg (PGresult *res);
-
 OBOOKS_EXPORT char*
     book_get_title (book_t *self);
 
