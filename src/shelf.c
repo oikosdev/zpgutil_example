@@ -52,7 +52,7 @@ shelf_new(zpgutil_session_t *session)
 int
 shelf_count_books (shelf_t *self)
 {
-  char *sql = "SELECT COUNT(*) FROM book";
+  const char *sql = "SELECT COUNT(*) FROM book";
   zpgutil_session_sql (self->session, sql);
   char* res = zpgutil_session_select_one (self->session);
   assert (res);
@@ -64,7 +64,7 @@ shelf_count_books (shelf_t *self)
 void
 shelf_load_books (shelf_t *self)
 {
-  char *sql = "SELECT id, author, title FROM book";
+  const char *sql = "SELECT id, author, title FROM book";
   zpgutil_session_sql (self->session, sql);
   self->all_books_res = zpgutil_session_select (self->session);
   assert (self->all_books_res);
@@ -100,11 +100,11 @@ shelf_add_book (shelf_t *self, const char *author, const char *title)
 {
   zuuid_t *uuid = zuuid_new ();
   const char *str_uuid = zuuid_str (uuid);
-  char* sql = "INSERT INTO book(id,author,title) VALUES($1,$2,$3);"; 
+  const char* sql = "INSERT INTO book(id,author,title) VALUES($1,$2,$3);"; 
   zpgutil_session_sql (self->session, sql);
-  zpgutil_session_set (self->session, (char*)str_uuid);
-  zpgutil_session_set (self->session, (char*)author);
-  zpgutil_session_set (self->session, (char*)title);
+  zpgutil_session_set (self->session, str_uuid);
+  zpgutil_session_set (self->session, author);
+  zpgutil_session_set (self->session, title);
   zpgutil_session_execute (self->session);
   zpgutil_session_commit (self->session);     
   book_t *book = book_new (str_uuid,author,title);
