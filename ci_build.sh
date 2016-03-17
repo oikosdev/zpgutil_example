@@ -17,7 +17,7 @@ if [ $BUILD_TYPE == "default" ]; then
     # Build, check, and install czmq 
     git clone git://github.com/zeromq/czmq.git &&
     ( cd czmq; ./autogen.sh && ./configure &&
-        make check && sudo make install && sudo ldconfig ) || exit 1
+        make && sudo make install && sudo ldconfig ) || exit 1
 
     # Build, check, and install czmq 
     git clone git://github.com/oikosdev/zpgutil.git &&
